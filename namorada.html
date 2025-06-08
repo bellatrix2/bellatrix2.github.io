@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Para Isabela - Dias dos Namorados</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap");
+
+      :root {
+        --color-primary: #e11d48; /* warm pink/red */
+        --color-primary-dark: #991b1b;
+        --color-bg: #fff7f9;
+        --color-text-primary: #581c2d;
+        --color-text-secondary: #6b7280;
+        --heart-size-min: 12px;
+        --heart-size-max: 28px;
+      }
+
+      /* Reset & base */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Poppins", sans-serif;
+        background: var(--color-bg);
+        color: var(--color-text-primary);
+        display: flex;
+        min-height: 100vh;
+        align-items: center;
+        justify-content: center;
+        overflow-x: hidden;
+        padding: 1rem;
+        position: relative;
+      }
+
+      .container {
+        max-width: 600px;
+        width: 100%;
+        background: white;
+        border-radius: 0.75rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        padding: 3rem 2.5rem 4rem;
+        text-align: center;
+        position: relative;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        color: var(--color-primary-dark);
+        margin-bottom: 0.5rem;
+        text-shadow: 1px 1px 3px var(--color-primary);
+      }
+
+      p.message {
+        font-size: 1.25rem;
+        font-weight: 500;
+        color: var(--color-text-secondary);
+        line-height: 1.5;
+      }
+
+      .countdown {
+        display: flex;
+        justify-content: center;
+        gap: 1.75rem;
+        font-weight: 700;
+        color: var(--color-primary-dark);
+        margin-top: 1rem;
+        margin-bottom: 0;
+      }
+
+      .countdown > div {
+        background: var(--color-primary);
+        padding: 1.2rem 1.5rem;
+        border-radius: 0.75rem;
+        min-width: 72px;
+        box-shadow: 0 5px 15px rgba(225, 29, 72, 0.15);
+        color: white;
+        transition: background-color 0.3s ease;
+      }
+
+      .countdown > div span.number {
+        display: block;
+        font-size: 2.4rem;
+        line-height: 1;
+      }
+
+      .countdown > div span.label {
+        font-size: 0.85rem;
+        margin-top: 0.3rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .countdown > div:hover {
+        background-color: var(--color-primary-dark);
+        cursor: default;
+      }
+
+      /* Button styling */
+      .cta-button {
+        background-color: #000000;
+        color: #ffffff;
+        font-size: 1.4rem;
+        font-weight: 700;
+        padding: 1rem 2.5rem;
+        border: none;
+        border-radius: 0.75rem;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        user-select: none;
+        text-transform: none;
+        letter-spacing: 0.02em;
+        margin-top: 2rem;
+      }
+      .cta-button:hover,
+      .cta-button:focus {
+        background-color: var(--color-primary);
+        box-shadow: 0 10px 30px rgba(225, 29, 72, 0.4);
+        outline: none;
+      }
+      .cta-button:focus-visible {
+        outline: 3px solid var(--color-primary-dark);
+        outline-offset: 3px;
+      }
+
+      /* Love message shown after click */
+      #loveMessage {
+        font-size: 1.3rem;
+        font-weight: 600;
+        line-height: 1.5;
+        color: var(--color-primary-dark);
+        margin-top: 1rem;
+        user-select: none;
+        min-height: 3rem;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+      }
+      #loveMessage.visible {
+        opacity: 1;
+      }
+
+      /* Floating Hearts animation */
+      .heart {
+        position: fixed;
+        bottom: -50px;
+        background-color: var(--color-primary);
+        width: var(--heart-size-min);
+        height: var(--heart-size-min);
+        transform: rotate(45deg);
+        animation: floatUp linear forwards;
+        opacity: 0.8;
+        box-shadow: -2px -2px 5px #fce7f3, 2px 2px 8px rgba(225, 29, 72, 0.4);
+        border-radius: 0 0 20% 20%;
+        z-index: 5;
+      }
+      .heart::before,
+      .heart::after {
+        content: "";
+        position: absolute;
+        width: inherit;
+        height: inherit;
+        background-color: var(--color-primary);
+        border-radius: 50%;
+      }
+      .heart::before {
+        top: -50%;
+        left: 0;
+      }
+      .heart::after {
+        left: 50%;
+        top: 0;
+      }
+
+      @keyframes floatUp {
+        0% {
+          bottom: -50px;
+          opacity: 0.8;
+          transform: rotate(45deg) scale(1);
+        }
+        100% {
+          bottom: 110vh;
+          opacity: 0;
+          transform: rotate(45deg) scale(1.8);
+        }
+      }
+
+      /* Fireworks container */
+      #fireworksCanvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 1;
+        background: transparent;
+      }
+
+      /* Responsive */
+      @media (max-width: 480px) {
+        h1 {
+          font-size: 2.8rem;
+        }
+
+        .countdown > div {
+          min-width: 56px;
+          padding: 0.8rem 1rem;
+        }
+
+        .countdown > div span.number {
+          font-size: 1.8rem;
+        }
+
+        .cta-button {
+          font-size: 1.1rem;
+          padding: 0.8rem 2rem;
+        }
+
+        #loveMessage {
+          font-size: 1.1rem;
+          min-height: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      class="container"
+      role="main"
+      aria-label="Mensagem para Isabela do Dia dos Namorados"
+    >
+      <h1>Isabela amor da minha vida</h1>
+      <p class="message">
+        Te amo muito meu amor, obrigada por me fazer a pessoa mais feliz do
+        mundo todo
+      </p>
+      <div
+        class="countdown"
+        role="timer"
+        aria-live="polite"
+        aria-atomic="true"
+        aria-label="Contagem regressiva para 12 de junho"
+      >
+        <div aria-label="Dias">
+          <span class="number" id="days">0</span>
+          <span class="label">Dias</span>
+        </div>
+        <div aria-label="Horas">
+          <span class="number" id="hours">0</span>
+          <span class="label">Horas</span>
+        </div>
+        <div aria-label="Minutos">
+          <span class="number" id="minutes">0</span>
+          <span class="label">Minutos</span>
+        </div>
+        <div aria-label="Segundos">
+          <span class="number" id="seconds">0</span>
+          <span class="label">Segundos</span>
+        </div>
+      </div>
+      <button
+        class="cta-button"
+        type="button"
+        aria-label="Botão para Isabela com mensagem especial"
+        id="loveBtn"
+      >
+        Para você, meu amor ❤️
+      </button>
+      <div id="loveMessage" aria-live="polite" aria-atomic="true"></div>
+    </div>
+
+    <canvas id="fireworksCanvas" aria-hidden="true"></canvas>
+
+    <script>
+      // Countdown logic
+      function updateCountdown() {
+        const now = new Date();
+        let year = now.getFullYear();
+        const targetDate = new Date(year, 5, 12, 0, 0, 0, 0); // June 12
+
+        if (now > targetDate) {
+          targetDate.setFullYear(year + 1);
+        }
+
+        const diff = targetDate - now;
+
+        if (diff <= 0) {
+          document.getElementById("days").textContent = "0";
+          document.getElementById("hours").textContent = "0";
+          document.getElementById("minutes").textContent = "0";
+          document.getElementById("seconds").textContent = "0";
+          return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diff / (1000 * 60)) % 60);
+        const seconds = Math.floor((diff / 1000) % 60);
+
+        document.getElementById("days").textContent = days;
+        document.getElementById("hours").textContent = hours
+          .toString()
+          .padStart(2, "0");
+        document.getElementById("minutes").textContent = minutes
+          .toString()
+          .padStart(2, "0");
+        document.getElementById("seconds").textContent = seconds
+          .toString()
+          .padStart(2, "0");
+      }
+
+      setInterval(updateCountdown, 1000);
+      updateCountdown();
+
+      // Floating hearts logic
+      function createHeart() {
+        const heart = document.createElement("div");
+        heart.classList.add("heart");
+        const size =
+          Math.random() *
+            (parseInt(
+              getComputedStyle(document.documentElement).getPropertyValue(
+                "--heart-size-max"
+              )
+            ) -
+              parseInt(
+                getComputedStyle(document.documentElement).getPropertyValue(
+                  "--heart-size-min"
+                )
+              )) +
+          parseInt(
+            getComputedStyle(document.documentElement).getPropertyValue(
+              "--heart-size-min"
+            )
+          );
+        heart.style.width = size + "px";
+        heart.style.height = size + "px";
+        heart.style.left = Math.random() * window.innerWidth + "px";
+
+        const duration = Math.random() * 7 + 5;
+        const delay = Math.random() * 5;
+        heart.style.animationDuration = duration + "s";
+        heart.style.animationDelay = delay + "s";
+
+        document.body.appendChild(heart);
+        heart.addEventListener("animationend", () => {
+          heart.remove();
+        });
+      }
+      setInterval(createHeart, 500);
+
+      // Fireworks animation on canvas
+      const canvas = document.getElementById("fireworksCanvas");
+      const ctx = canvas.getContext("2d");
+      let cw, ch;
+
+      function resizeCanvas() {
+        cw = canvas.width = window.innerWidth;
+        ch = canvas.height = window.innerHeight;
+      }
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+
+      const fireworks = [];
+      const particles = [];
+
+      function random(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      class Firework {
+        constructor(sx, sy, tx, ty) {
+          this.x = sx;
+          this.y = sy;
+          this.sx = sx;
+          this.sy = sy;
+          this.tx = tx;
+          this.ty = ty;
+          this.distanceToTarget = dist(sx, sy, tx, ty);
+          this.distanceTraveled = 0;
+          this.coordinates = [];
+          this.coordinateCount = 3;
+          while (this.coordinateCount--) {
+            this.coordinates.push([this.x, this.y]);
+          }
+          this.angle = Math.atan2(ty - sy, tx - sx);
+          this.speed = 4;
+          this.acceleration = 1.05;
+          this.brightness = random(50, 90);
+          this.targetRadius = 1;
+          this.hue = random(300, 360); // pink hues
+        }
+
+        update(index) {
+          this.coordinates.pop();
+          this.coordinates.unshift([this.x, this.y]);
+
+          if (this.targetRadius < 8) {
+            this.targetRadius += 0.3;
+          } else {
+            this.targetRadius = 1;
+          }
+          this.speed *= this.acceleration;
+          let vx = Math.cos(this.angle) * this.speed;
+          let vy = Math.sin(this.angle) * this.speed;
+          this.distanceTraveled = dist(
+            this.sx,
+            this.sy,
+            this.x + vx,
+            this.y + vy
+          );
+
+          if (this.distanceTraveled >= this.distanceToTarget) {
+            createParticles(this.tx, this.ty, this.hue);
+            fireworks.splice(index, 1);
+          } else {
+            this.x += vx;
+            this.y += vy;
+          }
+        }
+
+        draw() {
+          ctx.beginPath();
+          ctx.moveTo(
+            this.coordinates[this.coordinates.length - 1][0],
+            this.coordinates[this.coordinates.length - 1][1]
+          );
+          ctx.lineTo(this.x, this.y);
+          ctx.strokeStyle =
+            "hsl(" + this.hue + ", 100%, " + this.brightness + "%)";
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(this.tx, this.ty, this.targetRadius, 0, Math.PI * 2);
+          ctx.strokeStyle =
+            "hsl(" + this.hue + ", 100%, " + this.brightness + "%)";
+          ctx.stroke();
+        }
+      }
+
+      class Particle {
+        constructor(x, y, hue) {
+          this.x = x;
+          this.y = y;
+          this.coordinates = [];
+          this.coordinateCount = 5;
+          while (this.coordinateCount--) {
+            this.coordinates.push([this.x, this.y]);
+          }
+          this.angle = random(0, Math.PI * 2);
+          this.speed = random(1, 10);
+          this.friction = 0.95;
+          this.gravity = 0.7;
+          this.hue = hue;
+          this.brightness = random(60, 90);
+          this.alpha = 1;
+          this.decay = random(0.015, 0.03);
+          this.flicker = Math.random() < 0.5;
+        }
+
+        update(index) {
+          this.coordinates.pop();
+          this.coordinates.unshift([this.x, this.y]);
+          this.speed *= this.friction;
+          this.x += Math.cos(this.angle) * this.speed;
+          this.y += Math.sin(this.angle) * this.speed + this.gravity;
+          this.alpha -= this.decay;
+
+          if (this.alpha <= this.decay) {
+            particles.splice(index, 1);
+          }
+        }
+
+        draw() {
+          ctx.beginPath();
+          ctx.moveTo(
+            this.coordinates[this.coordinates.length - 1][0],
+            this.coordinates[this.coordinates.length - 1][1]
+          );
+          ctx.lineTo(this.x, this.y);
+          let flickerAlpha = this.flicker
+            ? this.alpha * Math.random()
+            : this.alpha;
+          ctx.strokeStyle =
+            "hsla(" +
+            this.hue +
+            ", 100%, " +
+            this.brightness +
+            "%, " +
+            flickerAlpha +
+            ")";
+          ctx.stroke();
+        }
+      }
+
+      function createParticles(x, y, hue) {
+        let particleCount = 40;
+        while (particleCount--) {
+          particles.push(new Particle(x, y, hue));
+        }
+      }
+
+      function dist(aX, aY, bX, bY) {
+        return Math.sqrt((bX - aX) * (bX - aX) + (bY - aY) * (bY - aY));
+      }
+
+      function loop() {
+        requestAnimationFrame(loop);
+
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.fillStyle = "rgba(255,255,255,0.3)";
+        ctx.fillRect(0, 0, cw, ch);
+        ctx.globalCompositeOperation = "lighter";
+
+        let i = fireworks.length;
+        while (i--) {
+          fireworks[i].draw();
+          fireworks[i].update(i);
+        }
+
+        let j = particles.length;
+        while (j--) {
+          particles[j].draw();
+          particles[j].update(j);
+        }
+
+        if (Math.random() < 0.04) {
+          let startX = random(cw / 4, (cw * 3) / 4);
+          let startY = ch;
+          let targetX = random(0, cw);
+          let targetY = random(0, ch / 2);
+          fireworks.push(new Firework(startX, startY, targetX, targetY));
+        }
+      }
+
+      loop();
+
+      // Show love message on button click
+      const loveBtn = document.getElementById("loveBtn");
+      const loveMessage = document.getElementById("loveMessage");
+
+      loveBtn.addEventListener("click", () => {
+        loveMessage.textContent =
+          "A primeira vez que te conheci foi exatamente isso. Um ponto de luz no meio do caos. Um silêncio cheio de sentido no barulho da vida.  E então, você apareceu. Sem aviso, sem fazer alarde. Mas, ainda assim, foi como se o universo inteiro tivesse parado por um segundo para respirar junto com a gente. Foi o seu olhar que me encontrou primeiro, foi o seu toque que me ensinou que o amor não precisa gritar, ele só precisa ser sincero. E é por isso que eu digo: não existe nada como a primeira vez que te conheci. Porque naquele momento, meu coração encontrou o lar que ele sempre procurou. Mas deixa eu te dizer de novo, com todo amor que há em mim: eu escolho você. Em todas as vidas. Em todos os começos. Em todos os dias em que eu fechar os olhos e lembrar que o amor, de verdade, tem o seu nome. Te amo minha vida";
+        loveMessage.classList.add("visible");
+        // Optionally, disable button to prevent repeated clicks
+        loveBtn.disabled = true;
+        loveBtn.style.cursor = "default";
+      });
+    </script>
+  </body>
+</html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Galeria de Imagens</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #a85496;
+      }
+      .gallery {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .gallery img {
+        margin: 10px;
+        border: 2px solid #8645ac;
+        border-radius: 10px;
+        width: 300px;
+      }
+      h1 {
+        color: #341e4d;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Galeria de Momentos</h1>
+    <div class="gallery">
+      <img src="WhatsApp Image 2025-06-08 at 14.36.25.jpeg" alt="Momento 1" />
+      <img src="WhatsApp Image 2025-06-08 at 14.35.57.jpeg" alt="Momento 2" />
+      <img src="love.jpg" alt="Momento 3" />
+    </div>
+  </body>
+</html>
